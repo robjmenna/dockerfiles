@@ -1,0 +1,150 @@
+services:
+  # sonarr
+  sonarr:
+    image: cr.hotio.dev/hotio/sonarr
+    volumes:
+      - /share/docker/home/server/etc/sonarr:/config
+      - /share/Media:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+
+  # radarr
+  radarr:
+    image: cr.hotio.dev/hotio/radarr
+    volumes:
+      - /share/docker/home/server/etc/radarr:/config
+      - /share/Media:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+  # lidarr
+  lidarr:
+    image: cr.hotio.dev/hotio/lidarr
+    volumes:
+      - /share/docker/home/server/etc/lidarr:/config
+      - /share/Media:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+
+  # prowlarr
+  prowlarr:
+    image: cr.hotio.dev/hotio/prowlarr
+    volumes:
+      - /share/docker/home/server/etc/prowlarr:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+
+  overseerr:
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    environment:
+      - TZ=America/New_York
+    ports:
+      - 5055:5055
+    volumes:
+      - /share/docker/home/server/etc/overseerr:/app/config
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+
+  # SABnzbd
+  sabnzbd:
+    image: cr.hotio.dev/hotio/sabnzbd
+    volumes:
+      - /share/docker/home/server/etc/sabnzbd:/config
+      - /share/Media/sabnzbd:/data/sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+    ports:
+      - 8081:8080
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/New_York
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - /share/docker/home/server/etc/deluge:/config
+      - /share/Media/torrents:/data/torrents
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+  pms-docker:
+    container_name: plex
+    network_mode: host
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - /share/docker/home/server/etc/plex:/config
+      - /share/docker/home/server/var/plex:/transcode
+      - /share/Media/media:/data
+    image: plexinc/pms-docker:latest
+    restart: unless-stopped
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
+  ngnix-reverse-proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '81:80'
+      - '82:81'
+      - '444:443'
+    volumes:
+      - /share/docker/home/server/var/nproxy:/data
+      - /share/docker/home/server/etc/letsencrypt:/etc/letsencrypt
+    dns:
+      - 10.0.0.1
+      - 8.8.8.8
