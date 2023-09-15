@@ -4,7 +4,7 @@ services:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
     volumes:
-      - /home/homeassistant/configuration:/config
+      - /share/homes/ha/etc/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     privileged: true
@@ -30,9 +30,12 @@ services:
       #- '/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d888873a7a74ec11b1e8b05019c2d21c-if00-port0:/dev/zwave'
       - '/dev/ttyUSB0:/dev/zwave'
     volumes:
-      - /home/homeassistant/.zwave/store:/usr/src/app/store
+      - zwave-config:/usr/src/app/store
     ports:
       - "8091:8091" # port for web interface
       - "3000:3000" # port for Z-Wave JS websocket server
 networks:
-  zwave:
+    zwave:
+volumes:
+    zwave-config:
+        name: zwave-config
