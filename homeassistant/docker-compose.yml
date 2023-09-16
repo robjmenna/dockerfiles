@@ -30,10 +30,7 @@ services:
       #- '/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d888873a7a74ec11b1e8b05019c2d21c-if00-port0:/dev/zwave'
       - '/dev/ttyUSB0:/dev/zwave'
     volumes:
-      - zwave-config:/usr/src/app/store
+      - /share/homes/ha/.zwave:/usr/src/app/store
     ports:
       - "8091:8091" # port for web interface
       - "3000:3000" # port for Z-Wave JS websocket server
-volumes:
-    zwave-config:
-        name: zwave-config
